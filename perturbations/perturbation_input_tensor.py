@@ -21,31 +21,26 @@ class AddGaussianNoise:
     
 class AddRandomPatchMask:
     def __init__(self, patch_size=70, k=20):
-        """
-        Args:
-            patch_size (int): Size of the square mask (in pixels).
-            value (float): Fill value for the patch (e.g., 0.0 for black, 0.5 for gray).
-            p (float): Probability of applying the patch.
-        """
         self.patch_size = patch_size
         self.k = k
 
-    def __call__(self, tensor):
-        """
-        Args:
-            tensor (Tensor): Image tensor of shape (C, H, W), values in [0, 1].
-        """
-
-        C, H, W = tensor.shape
+    def apply_mask(self, img):
+        C, H, W = img.shape
         if H < self.patch_size or W < self.patch_size:
-            return tensor  # Skip if patch is too big
-
+            return img
         for _ in range(self.k):
             top = torch.randint(0, H - self.patch_size + 1, (1,)).item()
             left = torch.randint(0, W - self.patch_size + 1, (1,)).item()
-            tensor[:, top:top + self.patch_size, left:left + self.patch_size] = 0.
+            img[:, top:top + self.patch_size, left:left + self.patch_size] = 0.
+        return img
 
-        return tensor
+    def __call__(self, tensor):
+        if tensor.dim() == 3:
+            return self.apply_mask(tensor)
+        elif tensor.dim() == 4:
+            return torch.stack([self.apply_mask(img) for img in tensor])
+        else:
+            raise ValueError("Input tensor must be 3D or 4D.")
     
     
 class DownUpSample:
@@ -58,18 +53,21 @@ class DownUpSample:
         if not torch.is_tensor(img):
             raise TypeError("DownUpSample expects a tensor input.")
 
+        # Handle both single image (C, H, W) and batch (B, C, H, W)
+        is_batched = img.dim() == 4
+        if not is_batched:
+            img = img.unsqueeze(0)  # Add batch dimension
 
-        c, h, w = img.shape
-
-        # Downsample
+        b, c, h, w = img.shape
         h_small = max(1, int(h * self.scale_factor))
         w_small = max(1, int(w * self.scale_factor))
-        img_small = F.interpolate(img.unsqueeze(0), size=(h_small, w_small), mode=self.mode, align_corners=self.align_corners)
 
+        # Downsample
+        img_small = F.interpolate(img, size=(h_small, w_small), mode=self.mode, align_corners=self.align_corners)
         # Upsample
         img_resized = F.interpolate(img_small, size=(h, w), mode=self.mode, align_corners=self.align_corners)
 
-        return img_resized.squeeze(0)
+        return img_resized if is_batched else img_resized.squeeze(0)
     
     
 ### Some examples of transformations without data normalization (add your data normalization at the end depending on your training/testing)
