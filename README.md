@@ -31,3 +31,7 @@ conda deactivate
 
 In this work, we use publicly available datasets [SVHN](http://ufldl.stanford.edu/housenumbers/), [CIFAR10](https://www.cs.toronto.edu/~kriz/cifar.html). Besides, we also use our own dataset as described in the paper.
 
+## Running for experiments
+
+The process is totally the same for different datasets. Hence, we put here only the scheme for CIFAR10, but the method is easily applied for any dataset. Besides, we also give example of how to apply the perturbations on the data using pytorch in [perturbations](https://github.com/HaiVyNGUYEN/robust_noise/tree/master/perturbations).
+
