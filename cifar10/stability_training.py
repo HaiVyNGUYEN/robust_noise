@@ -63,7 +63,7 @@ train_loader = torch.utils.data.DataLoader(train_dataset_both, batch_size=64,shu
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using {device} device")
 
-model = ResNet18(num_classes=10,inter_dim=256).to(device)
+model = ResNet18(num_classes=10,inter_dim=128).to(device)
 print(model)
 loss_fn = nn.CrossEntropyLoss()
 
