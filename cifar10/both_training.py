@@ -6,7 +6,8 @@ from torchvision import transforms
 from torch.optim.lr_scheduler import MultiStepLR
 import os
 from resnet_architecture import ResNet18
-from training_routines import copy_state_dict, accuracy_evaluation, train_no
+from training_routines import copy_state_dict, accuracy_evaluation, train_both
+from double_dataset import dataset_both
 from datetime import datetime
 
 
@@ -35,6 +36,14 @@ train_transform_noise = transforms.Compose([
                                  (0.49139968, 0.48215841, 0.44653091), (0.24703223, 0.24348513, 0.26158784)),
                                 ])
 
+train_transform = transforms.Compose([
+                                transforms.RandomCrop(32, padding=4),
+                                transforms.RandomHorizontalFlip(),
+                                transforms.ToTensor(),
+                                transforms.Normalize(
+                                 (0.49139968, 0.48215841, 0.44653091), (0.24703223, 0.24348513, 0.26158784)),
+                                ])
+
 test_transform = transforms.Compose([
                                transforms.ToTensor(),
                                transforms.Normalize(
@@ -42,10 +51,10 @@ test_transform = transforms.Compose([
 
 
 test_dataset.transform = test_transform
-train_dataset.transform = train_transform_noise
+train_dataset_both = dataset_both(train_dataset, transform=train_transform, transform_noise=train_transform_noise)
 
 test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64,shuffle=False)
-train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64,shuffle=True)
+train_loader = torch.utils.data.DataLoader(train_dataset_both, batch_size=64,shuffle=True)
 
 
 ############################ Initializing ResNet18 Model and training params #############################
@@ -72,7 +81,7 @@ epoch_max = 0
 
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
-    _train_batch_loss , _train_batch_accuracy = train_no(train_loader, model, loss_fn, optimizer,device)
+    _train_batch_loss , _train_batch_accuracy = train_both(train_loader, model, loss_fn, optimizer,device)
     correct_temp = accuracy_evaluation(test_loader, model,device)
     print(correct_temp)
     
@@ -89,13 +98,7 @@ for t in range(epochs):
 if not os.path.exists('./saved_models'):
     os.makedirs('./saved_models')
 
-torch.save(model.state_dict(), f'./saved_models/resnet18_sgd_train_no_with_only_gaussian_noise_0.06_200_epochs')
-
-
-print("Done!")
-print(datetime.now())
-print('Time taken:', datetime.now()-now)
-
+torch.save(model.state_dict(), f'./saved_models/resnet18_sgd_train_no_with_both_gaussian_noise_0.06_200_epochs')
 
 
 
