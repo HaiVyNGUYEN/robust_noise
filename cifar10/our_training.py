@@ -6,8 +6,9 @@ from torchvision import transforms
 from torch.optim.lr_scheduler import MultiStepLR
 import os
 from resnet_architecture import ResNet18
-from training_routines import copy_state_dict, accuracy_evaluation, train_stability
+from training_routines import copy_state_dict, accuracy_evaluation, train_forcing
 from double_dataset import dataset_both
+from discriminative_loss_function import DiscriminativeLoss_forcing
 from datetime import datetime
 
 
@@ -67,6 +68,11 @@ model = ResNet18(num_classes=10,inter_dim=256).to(device)
 print(model)
 loss_fn = nn.CrossEntropyLoss()
 
+loss_dis = DiscriminativeLoss_forcing(num_classes = 10, dim = 256, delta_var=0.5, delta_dist=5.0)
+
+if torch.cuda.is_available():
+    loss_dis.cuda()
+
 optimizer = torch.optim.SGD(model.parameters(), lr=0.001,
                                 momentum=0.9, nesterov=True, weight_decay=5e-4)
 scheduler = MultiStepLR(optimizer, milestones=[60, 120, 160], gamma=0.2)
@@ -81,7 +87,8 @@ epoch_max = 0
 
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
-    _train_batch_loss , _train_batch_accuracy = train_stability(train_loader, model, loss_fn,optimizer, lamb=1.,device=device)
+    _train_batch_loss , _train_batch_accuracy = train_forcing(train_loader, model, loss_fn,\
+                                                              optimizer,loss_dis, lamb=1.,device=device)
     correct_temp = accuracy_evaluation(test_loader, model,device)
     print(correct_temp)
     
@@ -98,7 +105,7 @@ for t in range(epochs):
 if not os.path.exists('./saved_models'):
     os.makedirs('./saved_models')
 
-torch.save(model.state_dict(), f'./saved_models/resnet18_sgd_train_stability_gaussian_noise_0.06_200_epochs')
+torch.save(model.state_dict(), f'./saved_models/resnet18_sgd_train_ours_gaussian_noise_0.06_200_epochs')
 
 
 
