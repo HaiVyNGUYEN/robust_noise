@@ -1,3 +1,5 @@
+import torch 
+
 def train_forcing(dataloader, model, loss_fn, optimizer,loss_dis, lamb=1., device='cuda'):  ### our method
     
     # Total size of dataset for reference
