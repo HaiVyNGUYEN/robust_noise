@@ -47,3 +47,24 @@ def per_image_curvature_with_loss(model, data_loader, loss_fn, h=1e-2, K=20, dev
         list_curvature += curvature
         
     return np.array(list_curvature)
+
+def noise_testing(model, length_data, noise_dataloader, num_sim=10, device='cuda'):
+    """
+    function to compute number of correct predictions over different random noisy corruption (for each input)
+    """
+    model.eval()
+    model.to(device)
+    correct_list = np.zeros((num_sim,length_data))
+    for sim in range(num_sim):
+        print("Noise simulation", sim)
+        count = 0
+        # Gives X , y for each batch
+        for X, y in noise_dataloader:
+            X, y = X.to(device), y.to(device)
+            with torch.no_grad():
+                pred = model(X) 
+                correct_list[sim,count:count+len(X)] = \
+                (pred.argmax(1) == y).type(torch.float).clone().detach().cpu().numpy()
+            count += len(X)
+    correct_list = correct_list.sum(axis=0)
+    return correct_list
