@@ -33,5 +33,5 @@ In this work, we use publicly available datasets [SVHN](http://ufldl.stanford.ed
 
 ## Running for experiments
 
-The process is totally the same for different datasets. Hence, we put here only the scheme for CIFAR10, but the method is easily applied for any dataset. We intentionally make separate files in short format avoid inter-connection pipelines between files, so that readers can easily understand and adapt for their own purposes. Besides, we also give example of how to apply the perturbations on the data using pytorch in [perturbations](https://github.com/HaiVyNGUYEN/robust_noise/tree/master/perturbations).
+The process is totally the same for different datasets. Hence, we put here only the scheme for CIFAR10, but the method is easily applied for any dataset. We intentionally make separate files in short format, avoiding inter-connection pipelines between files, so that readers can easily understand and adapt for their own purposes. Besides, we also give example of how to apply the perturbations on the data using pytorch in [perturbations](https://github.com/HaiVyNGUYEN/robust_noise/tree/master/perturbations).
 
