@@ -55,7 +55,7 @@ scheduler = MultiStepLR(optimizer, milestones=[60, 120, 160], gamma=0.2)
 ########################## Start Training ##############################################
 print("Staring training....")
 now = datetime.now()
-epochs = 2
+epochs = 200
 correct = 0
 epoch_max = 0
 
