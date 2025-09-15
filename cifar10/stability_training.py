@@ -98,7 +98,7 @@ for t in range(epochs):
 if not os.path.exists('./saved_models'):
     os.makedirs('./saved_models')
 
-torch.save(model.state_dict(), f'./saved_models/resnet18_sgd_train_stability_gaussian_noise_0.06_200_epochs')
+torch.save(state, f'./saved_models/resnet18_sgd_train_stability_gaussian_noise_0.06_200_epochs')
 
 
 
