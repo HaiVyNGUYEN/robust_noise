@@ -5,6 +5,7 @@ This Repo contains all the files related to the paper.
 ![Propose method](https://github.com/HaiVyNGUYEN/robust_noise/blob/master/illustrative/noisy_training.png)
 
 ![...](https://github.com/HaiVyNGUYEN/robust_noise/blob/master/illustrative/tsne.png)
+![...](https://github.com/HaiVyNGUYEN/robust_noise/blob/master/illustrative/loss_evolution.gif)
 
 ## Dependencies
 
